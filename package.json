@@ -1,0 +1,15 @@
+{
+    "name": "breath-annual-schedule",
+    "version": "1.0.0",
+    "main": "index.js",
+    "license": "MIT",
+    "workspaces": [
+        "libs/*",
+        "apps/*",
+        "services/*"
+    ],
+    "private": true,
+    "devDependencies": {
+        "prettierrc": "^0.0.0-5"
+    }
+}
