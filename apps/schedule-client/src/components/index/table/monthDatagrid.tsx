@@ -6,18 +6,19 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useMemo, useState } from 'react';
 import RowDialog from './RowDialog';
-
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 interface Row {
     id: number;
     dayOfWeek: string;
     day: number;
-    event: string | null;
+    events: ScheduleEvent[];
 }
 
-export default function MonthDatagrid(props: { events: ScheduleEvent[]; month: number; year: number }) {
-    const [dialogEvent, setDialogEvent] = useState<ScheduleEvent | null>(null);
+export default function MonthDatagrid(props: { monthEvents: ScheduleEvent[]; month: number; year: number }) {
+    const [dialogEvents, setDialogEvents] = useState<ScheduleEvent[] | null>(null);
     const [open, setOpen] = useState(false);
-    const { events, month, year } = props;
+    const { monthEvents, month, year } = props;
     const columns: GridColDef[] = [
         {
             field: 'dayOfWeek',
@@ -32,9 +33,18 @@ export default function MonthDatagrid(props: { events: ScheduleEvent[]; month: n
             minWidth: 20,
         },
         {
-            field: 'event',
+            field: 'events',
             renderCell: (params) => {
-                return params.value ? <Chip label={params.value} style={{ backgroundColor: params.value }} /> : null;
+                return params.value ? (
+                    <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', padding: 0, margin: 0 }}>
+                        {params.value.map((event: ScheduleEvent) => (
+                            <Chip
+                                key={event.id}
+                                sx={{ backgroundColor: event.color, mx: 0.1, height: 20, borderRadius: 0 }}
+                            />
+                        ))}
+                    </div>
+                ) : null;
             },
         },
     ];
@@ -56,15 +66,20 @@ export default function MonthDatagrid(props: { events: ScheduleEvent[]; month: n
     const rows: Row[] = useMemo(() => {
         const days = getDaysInMonth(year, month);
         return days.map((day) => {
-            const event = events.find((event) => day.isSame(event.begin, 'day'));
+            const events = monthEvents
+                ? monthEvents.filter((event) => {
+                      const begin = dayjs(event.begin);
+                      return begin.isSame(day, 'day');
+                  })
+                : [];
             return {
                 id: day.date(),
                 dayOfWeek: day.format('ddd'),
                 day: day.date(),
-                event: event ? event.color : null,
+                events,
             };
         });
-    }, [events, month, year]);
+    }, [monthEvents, month, year]);
 
     return (
         <Grid item xs={1}>
@@ -78,24 +93,15 @@ export default function MonthDatagrid(props: { events: ScheduleEvent[]; month: n
                 // hideFooterSelectedRowCount
                 hideFooterPagination
                 density="compact"
-                onRowSelectionModelChange={(selection) => {
-                    if (selection.length === 1) {
-                        const selectedRow = rows.find((row) => row.id === selection[0]);
-                        if (selectedRow && selectedRow.event) {
-                            const event = events.find((event) => dayjs(event.begin).date() === selectedRow.day);
-                            if (event) {
-                                setDialogEvent(event);
-                            }
-                        }
+                onRowClick={(params) => {
+                    if (params.row.events.length > 0) {
+                        setDialogEvents(params.row.events);
                         setOpen(true);
                     }
-                    console.log(selection);
-                    console.log(dialogEvent);
                 }}
-                rowSelectionModel={rows.filter((row) => row.event).map((row) => row.id)}
             />
 
-            <RowDialog open={open} onClose={() => setOpen(false)} schEvent={dialogEvent} />
+            {/* <RowDialog open={open} onClose={() => setOpen(false)} schEvents={dialogEvents} /> */}
         </Grid>
     );
 }

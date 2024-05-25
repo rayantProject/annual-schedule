@@ -1,5 +1,5 @@
 {
-    "name": "breath-annual-schedule",
+    "name": "annual-schedule",
     "version": "1.0.0",
     "main": "index.js",
     "license": "MIT",
@@ -10,6 +10,12 @@
     ],
     "private": true,
     "devDependencies": {
+        "concurrently": "^8.2.2",
         "prettierrc": "^0.0.0-5"
+    },
+    "scripts": {
+        "dev": "concurrently \"yarn dev:api\" \"yarn dev:web\"",
+        "dev:api": "cd services/schedule-serve && yarn dev",
+        "dev:web": "cd apps/schedule-client && yarn dev"
     }
 }

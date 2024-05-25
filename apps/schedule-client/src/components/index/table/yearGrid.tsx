@@ -1,6 +1,6 @@
 import Grid from '@mui/material/Grid';
 import MonthDatagrid from '@/components/index/table/monthDatagrid';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { ScheduleEvent } from '@schedulelib/event';
 import dayjs from 'dayjs';
 type Month = {
@@ -18,10 +18,13 @@ export default function YearGrid(props: { events: ScheduleEvent[]; year: number 
         });
     }, [events]);
 
+    useEffect(() => {
+        console.log(events);
+    }, []);
     return (
         <Grid item xs={12} container>
             {months.map((month) => (
-                <MonthDatagrid key={month.month} events={month.events} month={month.month} year={year} />
+                <MonthDatagrid key={month.month} monthEvents={month.events} month={month.month} year={year} />
             ))}
         </Grid>
     );

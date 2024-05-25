@@ -11,14 +11,26 @@ import Box from '@mui/material/Box';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import dayjs from 'dayjs';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
-
+import { getAllEvents } from '@/services/sever';
 import FormControl from '@mui/material/FormControl';
 import HeaderMenu from '@/components/index/headerMenu';
+import FilterDialog from '@/components/index/table/filterDialog';
+import FilterList from '@mui/icons-material/FilterList';
 export default function Home() {
     const [year, setYear] = useState(dayjs().year());
     const [openMenu, setOpenMenu] = useState<null | HTMLElement>(null);
+    const [events, setEvents] = useState<ScheduleEvent[]>([]);
+    const [openFilter, setOpenFilter] = useState(false);
+
+    useEffect(() => {
+        getAllEvents().then((data) => {
+            setEvents(data);
+        });
+        console.log('events: ', events);
+    }, []);
+
     const updateYear = (year: number) => {
         setYear(year);
         localStorage.setItem('year', year.toString());
@@ -43,6 +55,7 @@ export default function Home() {
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         Schedule
                     </Typography>
+
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <IconButton
                             size="large"
@@ -64,7 +77,6 @@ export default function Home() {
                                 focused
                             />
                         </FormControl>
-
                         <IconButton
                             size="large"
                             edge="end"
@@ -75,10 +87,26 @@ export default function Home() {
                             <NavigateNextIcon />
                         </IconButton>
                     </Box>
+                    <Box>
+                        <IconButton
+                            size="large"
+                            edge="end"
+                            color="inherit"
+                            aria-label="menu"
+                            onClick={() => setOpenFilter(true)}
+                        >
+                            <FilterList />
+                        </IconButton>
+                        <FilterDialog
+                            open={openFilter}
+                            onClose={() => setOpenFilter(false)}
+                            onFilter={() => {}}
+                            categories={events.map((event) => event.category)}
+                        />
+                    </Box>
                 </Toolbar>
             </AppBar>
-
-            <YearGrid events={[]} year={year} />
+            <YearGrid year={year} events={events} />
         </Paper>
     );
 }

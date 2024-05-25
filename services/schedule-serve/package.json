@@ -30,8 +30,8 @@
         "webpack-shell-plugin-next": "^2.3.1"
     },
     "scripts": {
-        "prod": "webpack --mode production",
-        "start": "webpack --mode development --watch",
+        "start": "webpack --mode production",
+        "dev": "webpack --mode development --watch",
         "clean": "rimraf dist && rimraf .cache && rimraf .build",
         "lint": "eslint --ext .ts src",
         "prettier": "prettier --write \"src/**/*.ts\"",
@@ -39,6 +39,9 @@
         "test": "jest --config  ./config/test/jest.config.ts"
     },
     "dependencies": {
+        "@schedulelib/event": "*",
+        "@types/cors": "^2.8.17",
+        "cors": "^2.8.5",
         "express": "^4.19.2",
         "mongoose": "^8.4.0"
     },
