@@ -101,7 +101,7 @@ export default function Home() {
                             open={openFilter}
                             onClose={() => setOpenFilter(false)}
                             onFilter={() => {}}
-                            categories={events.map((event) => event.category)}
+                            categories={events.map((event) => event.category) }
                         />
                     </Box>
                 </Toolbar>
